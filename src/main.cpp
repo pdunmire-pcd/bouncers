@@ -83,10 +83,23 @@ bn::fixed average_x(const bn::vector<Bouncer , MAX_BOUNCERS>& bouncers) {
     
 }
 
-void add_bouncer(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers) {
+void add_bouncer(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers, bn::random& rng) {
                     // Only add if we're below the maximum
     if(bouncers.size() < bouncers.max_size()) {
-        bouncers.push_back(Bouncer());
+        Bouncer b;
+
+        // Random speed between 1 and 4
+        bn::fixed x_spd = (rng.get() % 4) + 1;
+        bn::fixed y_spd = (rng.get() % 4) + 1;
+
+        // Randomly flip direction for each axis
+        if(rng.get() % 2 == 0) x_spd *= -1;
+        if(rng.get() % 2 == 0) y_spd *= -1;
+
+        b.x_speed = x_spd;
+        b.y_speed = y_spd;
+
+        bouncers.push_back(b);
     }
 }
 
@@ -96,11 +109,12 @@ int main() {
     // Sprites and x speeds of bouncers
     // Items with the same index correspond to each other
     bn::vector<Bouncer, MAX_BOUNCERS> bouncers = {};
+    bn::random rng;
 
     while(true) {
         // if A is pressed add a new bouncer
         if(bn::keypad::a_pressed()) {
-            add_bouncer(bouncers);
+            add_bouncer(bouncers, rng);
         }
 
         // if B is pressed print the average to the console
